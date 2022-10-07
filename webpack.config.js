@@ -10,6 +10,9 @@ module.exports = {
     Components({
       resolvers: [ElementPlusResolver()],
     }),
+    new webpack.ProvidePlugin({
+      process: 'process/browser',
+    }),
   ],externalsPresets: { node: true },
   // externals: [
   //   nodeExternals({

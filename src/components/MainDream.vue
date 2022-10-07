@@ -195,7 +195,6 @@ export default {
       this.job_status = job_status;
     },
     generateWss(params) {
-      this.getCredits();
       console.log("Connecting")
       const client = createSelasClient();
       if (this.auth_token != '') {

@@ -1,5 +1,5 @@
 const { defineConfig } = require('@vue/cli-service')
-const { fstat } = require('fs')
+const webpack = require('webpack');
 module.exports = defineConfig({
   transpileDependencies: true,
   configureWebpack: {
@@ -19,7 +19,18 @@ module.exports = defineConfig({
         net: false,
         assert: require.resolve("assert/"),
         encoding: require.resolve("encoding/"),
+        buffer: require.resolve("buffer/"),
       }
-    }
+    },
+    plugins: [
+      // fix "process is not defined" error:
+      // (do "npm install process" before running the build)
+      new webpack.ProvidePlugin({
+        process: 'process/browser',
+      }),
+      new webpack.ProvidePlugin({
+        Buffer: ['buffer', 'Buffer'],
+      }),
+  ],
   }
 })

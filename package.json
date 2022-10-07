@@ -48,6 +48,7 @@
     "@vue/cli-plugin-typescript": "^5.0.8",
     "@vue/cli-service": "^5.0.8",
     "@vue/eslint-config-typescript": "^11.0.0",
+    "buffer": "^6.0.3",
     "encoding": "^0.1.13",
     "eslint": "^8.23.0",
     "eslint-plugin-vue": "^9.4.0",
