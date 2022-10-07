@@ -1,9 +1,10 @@
 {
   "compilerOptions": {
-    "target": "esnext",
-    "module": "esnext",
+    "target": "es5",
+    "module": "commonjs",
     "strict": true,
-        "noImplicitAny": false,
+    "allowJs": true,
+    "noImplicitAny": false,
     "noImplicitThis": false,
     "noImplicitReturns": false,
     "jsx": "preserve",
@@ -17,7 +18,7 @@
     "baseUrl": ".",
     
     "types": [
-      "webpack-env"
+      "webpack-env", "node"
     ],
     "paths": {
       "@/*": [
@@ -25,7 +26,7 @@
       ]
     },
     "lib": [
- 
+      "es6",
       "esnext",
       "dom",
       "dom.iterable",

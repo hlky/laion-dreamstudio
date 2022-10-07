@@ -63,6 +63,7 @@ import ParamButton from './ParamButton.vue'
 import Editor from './Editor.vue'
 import ParamSelect from './ParamSelect.vue'
 import ParamPrompt from './ParamPrompt.vue'
+import { createSelasClient, DiffusionConfig, Config } from 'selas';
 
 export default {
   name: 'MainDream',
@@ -100,6 +101,7 @@ export default {
     return {
       generatedImages: [],
       word_phrase: '',
+      auth_token: '',
       credits: 0,
       show_editor: false,
       image_preview: '',
@@ -170,6 +172,7 @@ export default {
       });
       const serverdata = await response.json();
       this.credits = serverdata['credits'];
+      this.auth_token = serverdata['token'];
     },
     updateImage(generatedImage) {
       console.log("updating image")
@@ -192,59 +195,31 @@ export default {
       this.job_status = job_status;
     },
     generateWss(params) {
+      this.getCredits();
       console.log("Connecting")
-    const connection = new WebSocket(params.host)
-    // eslint-disable-next-line
-    const vm = this
-    connection.onmessage = function(event) {
-        const data = JSON.parse(event.data)
-        if ("jobId" in data) { 
-            console.log(data["jobId"]) 
-        } 
-        else if ("status" in data && "queue" in data && "images" in data && "nPreviousJobs" in data) {
-            const status = data["status"]
-            const queue = data["queue"]
-            const images = data["images"]
-            const nPreviousJobs = data["nPreviousJobs"]
-            if (status == "pending") {
-              vm.updateJobStatus({
-                  status: "pending",
-                  queue: queue
-              });
-              console.log('status: %s - queue position: %d', status, queue)
-            } else if (status == "accepted") {
-              vm.updateJobStatus({
-                  status: "accepted",
-                  queue: queue
-              });
-              console.log('status: %s - generation in progress', status)
-            } else if (status == "completed") {
-              vm.updateJobStatus({
-                  status: "completed",
-                  queue: queue
-              });
-              console.log('status: %s', status)
-              for (const image in images){
-                vm.updateImage(images[image]);
-                console.log('image: %s', images[image]);
-              }
-              vm.image_preview = "";
-            } else {
-              console.log('unknown status: %s', status)
-            }
+      const client = createSelasClient();
+      if (this.auth_token != '') {
+        const DiffusionConfig = {
+          prompt: params.prompt,
+          width: params.width,
+          height: params.height,
+          cfgScale: params.cfgScale,
+          steps: params.steps,
+          samples: params.samples,
+          onImage: (image) => {
+            this.updateImage(image);
+          },
+          onJobStatus: (job_status) => {
+            this.updateJobStatus(job_status);
+          }
         }
-        else {
-          console.log("unknown api response:", JSON.stringify(data))
+        const Config = {
+          diffusion: DiffusionConfig
         }
+        client.postJob(Config, this.auth_token);
+      }
+      
 
-    }
-    connection.onopen = function(event) {
-        console.log("Connected")
-        const message = {"prompt": params.prompt}
-        const message_json = JSON.stringify(message)
-        console.log("Sending" + message_json)
-        connection.send(message_json)
-    }
     }
   },
 }

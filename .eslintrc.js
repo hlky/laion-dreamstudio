@@ -1,8 +1,11 @@
 module.exports = {
   root: true,
-  env: {
-    node: true
-  },
+  "env": {
+    "node": true,
+    "commonjs": true,
+    "browser": true,
+    "es6": true
+   },
   extends: [
     'plugin:vue/vue3-essential',
     '@vue/typescript/recommended'

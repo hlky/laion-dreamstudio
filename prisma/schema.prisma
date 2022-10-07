@@ -31,4 +31,6 @@ model users {
   md5ip     String    @db.VarChar(32)
   created   DateTime? @default(now()) @db.Timestamptz(6)
   credits   Int?      @default(0)
+  selas_token String? @db.VarChar
+  selas_token_expiration  DateTime? @db.Timestamptz(6)
 }

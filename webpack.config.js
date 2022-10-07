@@ -11,13 +11,14 @@ module.exports = {
       resolvers: [ElementPlusResolver()],
     }),
   ],externalsPresets: { node: true },
-  externals: [
-    nodeExternals({
-      allowlist: [
-        'stability-sdk/src/js/generation_pb_service',
-        'stability-sdk/src/js/generation_pb',
-      ],
-    }),
-  ],
+  // externals: [
+  //   nodeExternals({
+  //     allowlist: [
+  //       'selas/dist'
+  //     ],
+  //   }),
+  // ],
+  // resolve fallback 
+  
 
 }
