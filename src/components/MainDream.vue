@@ -194,28 +194,21 @@ export default {
     updateJobStatus(job_status) {
       this.job_status = job_status;
     },
-    generateWss(params) {
+    async generateWss(params) {
+      await this.getCredits();
       console.log("Connecting")
       const client = createSelasClient();
       if (this.auth_token != '') {
-        const DiffusionConfig = {
-          prompt: params.prompt,
-          width: params.width,
-          height: params.height,
-          cfgScale: params.cfgScale,
-          steps: params.steps,
-          samples: params.samples,
-          onImage: (image) => {
-            this.updateImage(image);
-          },
-          onJobStatus: (job_status) => {
-            this.updateJobStatus(job_status);
-          }
-        }
-        const Config = {
-          diffusion: DiffusionConfig
-        }
-        client.postJob(Config, this.auth_token);
+        const { data: job, message, error } = await client.runStableDiffusion(
+          params.prompt,
+          params.width,
+          params.height,
+          params.steps,
+          params.cfgScale,
+          this.auth_token);
+        console.log(job);
+        console.log(message);
+        console.log(error);
       }
       
 
