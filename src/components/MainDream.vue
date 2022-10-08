@@ -212,7 +212,20 @@ export default {
       }
       
 
-    }
+    },
   },
+  async mounted() {
+    if (localStorage.word_phrase) {
+      this.word_phrase = localStorage.word_phrase;
+    } else {
+      await this.newSession();
+    }
+    await this.getCredits();
+  },
+  watch: {
+    word_phrase(new_word_phrase) {
+      localStorage.word_phrase = new_word_phrase;
+    }
+  }
 }
 </script>

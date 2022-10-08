@@ -31,50 +31,6 @@ export default {
   components: {
     ImageCost,
     MainDream
-    
-  },
-  data: function() {
-    return {
-      word_phrase: '',
-      credits: 0
-    };
-  },
-  methods: {
-    newSession: async function () {
-      const response = await fetch("api/user/new", {
-          method: "get",
-          headers: {
-              "Content-Type": "application/json; charset=UTF-8"
-          }
-      });
-      const serverdata = await response.json();
-      this.word_phrase = serverdata['word_phrase'];
-    },
-    getCredits: async function () {
-      const userData = {word_phrase: this.word_phrase }
-      const response = await fetch("api/user/credits", {
-          method: "post",
-          body: JSON.stringify(userData),
-          headers: {
-              "Content-Type": "application/json; charset=UTF-8"
-          }
-      });
-      const serverdata = await response.json();
-      this.credits = serverdata['credits'];
-    },
-  },
-  async mounted() {
-    if (localStorage.word_phrase) {
-      this.word_phrase = localStorage.word_phrase;
-    } else {
-      await this.newSession();
-    }
-    await this.getCredits();
-  },
-  watch: {
-    word_phrase(new_word_phrase) {
-      localStorage.word_phrase = new_word_phrase;
-    }
   }
 }
 </script>
