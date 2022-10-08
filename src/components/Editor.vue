@@ -137,16 +137,16 @@
                 </div>
             </div>
             <object aria-hidden="true" tabindex="-1" style="
-display: block !important; 
-position: absolute !important; 
-top: 0 !important; 
-left: 0 !important; 
-width: 100% !important; 
-height: 100% !important; 
-overflow: hidden !important; 
-pointer-events: none !important; 
-z-index: -1 !important; 
-opacity: 0 !important;" type="text/html" data="about:blank"></object>
+                display: block !important; 
+                position: absolute !important; 
+                top: 0 !important; 
+                left: 0 !important; 
+                width: 100% !important; 
+                height: 100% !important; 
+                overflow: hidden !important; 
+                pointer-events: none !important; 
+                z-index: -1 !important; 
+                opacity: 0 !important;" type="text/html" data="about:blank"></object>
         </div>
     </div>
 </div>
@@ -344,7 +344,7 @@ export default {
         closeEditor() {
             this.$emit('closeEditor');
         },
-        stopDrawing(event) {
+        stopDrawing() {
             if (this.editor_mode == 'mask' || this.editor_mode == 'restore') {
                 this.is_drawing = false;
                 if (this.points.length > 0) {

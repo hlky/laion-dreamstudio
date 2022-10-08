@@ -63,6 +63,7 @@ import ParamButton from './ParamButton.vue'
 import Editor from './Editor.vue'
 import ParamSelect from './ParamSelect.vue'
 import ParamPrompt from './ParamPrompt.vue'
+import { createSelasClient } from 'selas';
 
 export default {
   name: 'MainDream',
@@ -100,6 +101,7 @@ export default {
     return {
       generatedImages: [],
       word_phrase: '',
+      auth_token: '',
       credits: 0,
       show_editor: false,
       image_preview: '',
@@ -170,6 +172,7 @@ export default {
       });
       const serverdata = await response.json();
       this.credits = serverdata['credits'];
+      this.auth_token = serverdata['token'];
     },
     updateImage(generatedImage) {
       console.log("updating image")
@@ -191,61 +194,51 @@ export default {
     updateJobStatus(job_status) {
       this.job_status = job_status;
     },
-    generateWss(params) {
+    async generateWss(params) {
+      await this.getCredits();
       console.log("Connecting")
-    const connection = new WebSocket(params.host)
-    // eslint-disable-next-line
-    const vm = this
-    connection.onmessage = function(event) {
-        const data = JSON.parse(event.data)
-        if ("jobId" in data) { 
-            console.log(data["jobId"]) 
-        } 
-        else if ("status" in data && "queue" in data && "images" in data && "nPreviousJobs" in data) {
-            const status = data["status"]
-            const queue = data["queue"]
-            const images = data["images"]
-            const nPreviousJobs = data["nPreviousJobs"]
-            if (status == "pending") {
-              vm.updateJobStatus({
-                  status: "pending",
-                  queue: queue
-              });
-              console.log('status: %s - queue position: %d', status, queue)
-            } else if (status == "accepted") {
-              vm.updateJobStatus({
-                  status: "accepted",
-                  queue: queue
-              });
-              console.log('status: %s - generation in progress', status)
-            } else if (status == "completed") {
-              vm.updateJobStatus({
-                  status: "completed",
-                  queue: queue
-              });
-              console.log('status: %s', status)
-              for (const image in images){
-                vm.updateImage(images[image]);
-                console.log('image: %s', images[image]);
-              }
-              vm.image_preview = "";
-            } else {
-              console.log('unknown status: %s', status)
-            }
-        }
-        else {
-          console.log("unknown api response:", JSON.stringify(data))
-        }
+      const client = createSelasClient();
+      if (this.auth_token != '') {
+        const { data: job, message, error } = await client.runStableDiffusion(
+          params.prompt,
+          params.width,
+          params.height,
+          params.steps,
+          params.cfgScale,
+          this.auth_token);
+        console.log(job);
+        console.log(message);
+        console.log(error);
+      }
+      const whenJobIsDone = async (payload) => {
+      const {data: results} = await client.getResults(payload.new.id);
+      console.log(results);
+      this.updateImage(results);
+      };
 
-    }
-    connection.onopen = function(event) {
-        console.log("Connected")
-        const message = {"prompt": params.prompt}
-        const message_json = JSON.stringify(message)
-        console.log("Sending" + message_json)
-        connection.send(message_json)
-    }
-    }
+
+    //subscribe to job updates
+    await client.supabase.from("jobs").on("*", (payload) => {
+      if (payload.new.status === "completed") {
+        whenJobIsDone(payload);
+      }
+      
+      }).subscribe();
+
+    },
   },
+  async mounted() {
+    if (localStorage.word_phrase) {
+      this.word_phrase = localStorage.word_phrase;
+    } else {
+      await this.newSession();
+    }
+    await this.getCredits();
+  },
+  watch: {
+    word_phrase(new_word_phrase) {
+      localStorage.word_phrase = new_word_phrase;
+    }
+  }
 }
 </script>

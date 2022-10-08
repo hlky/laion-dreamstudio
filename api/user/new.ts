@@ -16,7 +16,7 @@ export default async function (req: VercelRequest, res: VercelResponse) {
 		word_phrase += word + ' ';
 	}
 	word_phrase = word_phrase.trim();
-
+	
 	await prisma.users.create({
 		data: {
 			md5ip: crypto.createHash('md5').update(requestIp.getClientIp(req)).digest('hex'),

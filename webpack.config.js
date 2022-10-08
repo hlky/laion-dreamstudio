@@ -10,14 +10,18 @@ module.exports = {
     Components({
       resolvers: [ElementPlusResolver()],
     }),
-  ],externalsPresets: { node: true },
-  externals: [
-    nodeExternals({
-      allowlist: [
-        'stability-sdk/src/js/generation_pb_service',
-        'stability-sdk/src/js/generation_pb',
-      ],
+    new webpack.ProvidePlugin({
+      process: 'process/browser',
     }),
-  ],
+  ],externalsPresets: { node: true },
+  // externals: [
+  //   nodeExternals({
+  //     allowlist: [
+  //       'selas/dist'
+  //     ],
+  //   }),
+  // ],
+  // resolve fallback 
+  
 
 }
