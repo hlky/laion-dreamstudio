@@ -206,9 +206,20 @@ export default {
           params.steps,
           params.cfgScale,
           this.auth_token);
-        console.log(job);
-        console.log(message);
-        console.log(error);
+        
+          const whenJobIsDone = async (payload: any) => {
+          const {data: results} = await client.getResults(payload.new.id);
+          console.log(results);
+        };
+
+
+        //subscribe to job updates
+        await client.supabase.from("jobs").on("*", (payload) => {
+          if (payload.new.status === "completed") {
+            whenJobIsDone(payload);
+          }
+          
+          }).subscribe();
       }
       
 
