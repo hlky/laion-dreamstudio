@@ -63,7 +63,7 @@ import ParamButton from './ParamButton.vue'
 import Editor from './Editor.vue'
 import ParamSelect from './ParamSelect.vue'
 import ParamPrompt from './ParamPrompt.vue'
-import { createSelasClient, DiffusionConfig, Config } from 'selas';
+import { createSelasClient } from 'selas';
 
 export default {
   name: 'MainDream',
@@ -206,22 +206,24 @@ export default {
           params.steps,
           params.cfgScale,
           this.auth_token);
-        
-          const whenJobIsDone = async (payload: any) => {
-          const {data: results} = await client.getResults(payload.new.id);
-          console.log(results);
-        };
+        console.log(job);
+        console.log(message);
+        console.log(error);
+      }
+      const whenJobIsDone = async (payload) => {
+      const {data: results} = await client.getResults(payload.new.id);
+      console.log(results);
+      this.updateImage(results);
+      };
 
 
-        //subscribe to job updates
-        await client.supabase.from("jobs").on("*", (payload) => {
-          if (payload.new.status === "completed") {
-            whenJobIsDone(payload);
-          }
-          
-          }).subscribe();
+    //subscribe to job updates
+    await client.supabase.from("jobs").on("*", (payload) => {
+      if (payload.new.status === "completed") {
+        whenJobIsDone(payload);
       }
       
+      }).subscribe();
 
     },
   },
@@ -232,6 +234,11 @@ export default {
       await this.newSession();
     }
     await this.getCredits();
+  },
+  watch: {
+    word_phrase(new_word_phrase) {
+      localStorage.word_phrase = new_word_phrase;
+    }
   }
 }
 </script>
