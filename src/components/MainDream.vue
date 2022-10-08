@@ -232,11 +232,6 @@ export default {
       await this.newSession();
     }
     await this.getCredits();
-  },
-  watch: {
-    word_phrase(new_word_phrase) {
-      localStorage.word_phrase = new_word_phrase;
-    }
   }
 }
 </script>

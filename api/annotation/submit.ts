@@ -42,7 +42,7 @@ export default async function (req: VercelRequest, res: VercelResponse) {
         const user_id_query2 = await prisma.users.findFirstOrThrow({
             where: { word_seed: word_phrase}
         });
-        const credits = user_id_query2.credits;
+        const credits = user_id_query2.credits || 0;
         const selas_token = user_id_query.selas_token || '';
         const selas_token_expiration = user_id_query.selas_token_expiration || current_time;
         if (selas_token == '' || selas_token_expiration < current_time) {
